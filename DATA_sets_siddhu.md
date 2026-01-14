@@ -17,3 +17,13 @@
 - Normalized pixel values to range [0, 1]
 - Stored preprocessed images in a separate directory
 - Ensured consistency across training, validation, and testing data
+## Data Augmentation – Day 3 (14 Jan 2026)
+
+- Applied augmentation techniques on training data only
+- Techniques used:
+  - Horizontal flipping
+  - Rotation
+  - Brightness and contrast adjustment
+  - Zoom scaling
+- Augmented images stored separately to avoid data leakage
+- Improved dataset diversity and model robustness
