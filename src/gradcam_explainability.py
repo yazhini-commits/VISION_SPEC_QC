@@ -20,7 +20,7 @@ LAST_CONV_LAYER = "Conv_1"  # MobileNetV2
 # ==============================
 if os.path.exists(MODEL_PATH):
     model = load_model(MODEL_PATH)
-    print(f"✅ Loaded model from {MODEL_PATH}")
+    print(f" Loaded model from {MODEL_PATH}")
 else:
     raise FileNotFoundError(f"Trained model not found: {MODEL_PATH}")
 
@@ -71,7 +71,7 @@ def get_gradcam(img_path, model, last_conv_layer_name, save_path, class_names=["
 
     # Save output
     cv2.imwrite(save_path, superimposed_img)
-    print(f"✅ Grad-CAM saved at {save_path}")
+    print(f" Grad-CAM saved at {save_path}")
 
 # ==============================
 # LOOP OVER TEST FOLDERS
@@ -79,7 +79,7 @@ def get_gradcam(img_path, model, last_conv_layer_name, save_path, class_names=["
 for subdir in ["defective", "non_defective"]:
     folder = os.path.join(TEST_DIR, subdir)
     if not os.path.exists(folder):
-        print(f"⚠️ Folder not found, skipping: {folder}")
+        print(f" Folder not found, skipping: {folder}")
         continue
 
     class_output_dir = os.path.join(OUTPUT_DIR, subdir)
@@ -93,3 +93,4 @@ for subdir in ["defective", "non_defective"]:
             save_path = os.path.join(class_output_dir, save_name)
             get_gradcam(img_path, model, LAST_CONV_LAYER, save_path)
             counter += 1
+
