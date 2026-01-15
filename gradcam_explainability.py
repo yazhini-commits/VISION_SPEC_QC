@@ -94,3 +94,4 @@ for subdir in ["defective", "non_defective"]:
             get_gradcam(img_path, model, LAST_CONV_LAYER, save_path)
             counter += 1
 
+
