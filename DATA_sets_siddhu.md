@@ -27,3 +27,22 @@
   - Zoom scaling
 - Augmented images stored separately to avoid data leakage
 - Improved dataset diversity and model robustness
+## Dataset Validation & Visualization – Day 15 (15 Jan 2026)
+
+- Performed dataset sanity checks to validate class distribution
+- Verified consistency across training, validation, and test splits
+- Visualized original and augmented samples to confirm augmentation effectiveness
+- Ensured no data leakage between dataset splits
+- Finalized data pipeline for model training
+## Known Failure Scenarios
+
+- Extremely subtle defects with minimal texture variation
+- Low-contrast defects under poor lighting conditions
+- Defects partially occluded or outside the focal region
+
+These cases are identified for future dataset expansion and model improvement.
+## Data Integrity Validation
+
+- Verified absence of corrupted or unreadable images
+- Ensured no overlap between training, validation, and test sets
+- Maintained strict split isolation to prevent data leakage
