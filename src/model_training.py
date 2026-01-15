@@ -2,6 +2,8 @@ from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 
 # Load base model
 base_model = MobileNetV2(
@@ -32,3 +34,35 @@ model.compile(
 )
 
 model.summary()
+
+
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=15,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1,
+    horizontal_flip=True
+)
+
+val_datagen = ImageDataGenerator(rescale=1./255)
+
+train_generator = train_datagen.flow_from_directory(
+    "processed_data/train",
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode="binary"
+)
+
+val_generator = val_datagen.flow_from_directory(
+    "processed_data/val",
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode="binary"
+)
+
+history = model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=5
+)
