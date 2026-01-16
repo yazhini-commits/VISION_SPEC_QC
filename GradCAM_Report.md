@@ -114,7 +114,7 @@ Output Shape: (None, 7, 7, 1280)
 
 ---
 
-## 📅 Day 4 – Test Grad-CAM on Sample Images
+##  Day 4 – Test Grad-CAM on Sample Images
 
 ### Objective
 To test the Grad-CAM implementation on real dataset images and verify end-to-end heatmap generation.
@@ -145,7 +145,7 @@ To test the Grad-CAM implementation on real dataset images and verify end-to-end
 
 ---
 
-## 📅 Day 5 – Grad-CAM Validation & Explainability Analysis
+##  Day 5 – Grad-CAM Validation & Explainability Analysis
 
 ### Objective
 To validate the correctness, reliability, and interpretability of the Grad-CAM outputs generated from the defect detection model.
@@ -168,6 +168,7 @@ To validate the correctness, reliability, and interpretability of the Grad-CAM o
 ```text
 Model Prediction Index: 0
 Confidence: ~0.77
+
 
 
 
