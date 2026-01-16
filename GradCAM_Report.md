@@ -108,7 +108,6 @@ Therefore, the **last convolutional layer** of the CNN was selected.
 - Verified output tensor dimensions
 
 ### Selected Target Layer
-```text
 Layer Name: out_relu
 Output Shape: (None, 7, 7, 1280)
 
@@ -168,6 +167,7 @@ To validate the correctness, reliability, and interpretability of the Grad-CAM o
 ```text
 Model Prediction Index: 0
 Confidence: ~0.77
+
 
 
 
