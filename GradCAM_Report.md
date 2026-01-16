@@ -127,6 +127,17 @@ This two-day task achieved both theoretical understanding and practical implemen
 
 ---
 
+## Grad-CAM Explainability
+
+Grad-CAM was applied to the trained MobileNetV2-based classifier to visualize
+important regions influencing defect prediction.
+
+The heatmaps clearly highlight solder joints and defect-prone areas,
+confirming that the model focuses on meaningful PCB regions rather than background noise.
+
+This improves trust and interpretability of the defect detection system.
+
+
 
 
 

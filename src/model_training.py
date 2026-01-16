@@ -66,3 +66,13 @@ history = model.fit(
     validation_data=val_generator,
     epochs=5
 )
+
+import os
+
+# Create directory if not exists
+os.makedirs("saved_models", exist_ok=True)
+
+# Save trained model
+model.save("saved_models/my_model.h5")
+
+print("Model saved successfully at saved_models/my_model.h5")
