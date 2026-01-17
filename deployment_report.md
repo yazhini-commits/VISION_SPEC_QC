@@ -8,9 +8,9 @@ This project aims to design, implement, and evaluate a **real-time computer visi
 
 ---
 
-## 2. Project Objectives
+## 2. Project Objective
 - Set up OpenCV for real-time video processing
-- Design a real-time inference workflow
+- Design a real-time inference workflo
 - Plan and implement an efficient inference pipeline
 - Define and validate FPS targets
 - Optimize inference speed
@@ -42,3 +42,12 @@ Performance metrics were defined. The target was to achieve an end-to-end FPS of
 
 ---
 
+### 16 January 2026 – FPS Benchmarking Strategy
+A benchmarking strategy was planned to calculate FPS using timestamps between consecutive frames. This allowed real-time monitoring of system performance.
+
+---
+
+### 17 January 2026 – Model Loading and Inference Testing
+The model loading strategy was finalized. Initial inference tests were conducted using sample inputs to validate correctness before real-time deployment.
+
+---

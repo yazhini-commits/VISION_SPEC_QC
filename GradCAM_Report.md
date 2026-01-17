@@ -56,74 +56,117 @@ The Grad-CAM process consists of the following steps:
 
 ---
 
-### 6. Day 1 Conclusion
+### 6. Conclusion
 Grad-CAM provides an effective and intuitive approach to understanding CNN decisions. A solid understanding of its fundamentals is essential before practical implementation in real-world applications.
 
 ---
 
-## Day 2: Design and Implementation of Grad-CAM
+## Day 2 – Design the Grad-CAM Approach
+
+### 1. Objectives
+- Design a structured Grad-CAM explainability workflow
+- Define gradient flow from prediction to convolutional layers
+
+### 2. Design Decisions
+- Post-training explainability (no retraining)
+- Use final convolutional layer for spatial relevance
+- Class-specific gradient computation
+- Heatmap normalization for visual clarity
+
+### 3. Planned Grad-CAM Flow
+1. Load trained CNN model (`my_model.h5`)
+2. Build a gradient model:
+   - Input → last convolutional layer
+   - Input → model predictions
+3. Compute gradients using `tf.GradientTape`
+4. Global average pooling of gradients
+5. Weighted feature map aggregation
+6. ReLU activation
+7. Resize and overlay heatmap on input image
+
+### 4. Outcome
+- Grad-CAM design finalized and ready for implementation
+  
+---
+
+  ## Day 3 – Identify Target Layer for Grad-CAM
 
 ### 1. Objective
-To design and implement a Grad-CAM explainability pipeline for a trained CNN model used in visual defect detection.
+To identify and validate the most suitable convolutional layer for Grad-CAM heatmap generation.
+
+### 2. Rationale
+Grad-CAM requires a layer that:
+- Preserves spatial information
+- Is deep enough to capture semantic features
+- Directly influences the final prediction
+
+Therefore, the **last convolutional layer** of the CNN was selected.
+
+### 3. Implementation
+- Programmatically inspected model layers
+- Selected the final convolutional activation layer
+- Verified output tensor dimensions
+
+### 4. Selected Target Layer
+Layer Name: out_relu
+Output Shape: (None, 7, 7, 1280)
 
 ---
 
+##  Day 4 – Test Grad-CAM on Sample Images
 
-At the time of implementation, test samples were available only for the defective class.
+### 1. Objective
+To test the Grad-CAM implementation on real dataset images and verify end-to-end heatmap generation.
 
----
+### 2. Dataset Used
+- Source: `processed_data/test/defective`
+- Image type: PCB defect images
 
-### 2. Model Details
-- Framework: TensorFlow / Keras  
-- Model file: `my_model.h5`  
-- Input size: 224 × 224 × 3  
-- Classification type: Binary (Defective / Non-defective)  
+### 3. Implementation Steps
+1. Load trained CNN model (`my_model.h5`)
+2. Read sample image using OpenCV
+3. Apply preprocessing:
+   - Resize to 224 × 224
+   - Normalize pixel values
+4. Forward pass through Grad-CAM model
+5. Compute gradients for predicted class
+6. Generate Grad-CAM heatmap
+7. Resize heatmap to original image size
+8. Superimpose heatmap on input image
+9. Save output image
 
----
-
-### 3. Grad-CAM Design Approach
-The Grad-CAM pipeline was implemented using the following steps:
-
-1. Load the trained `.h5` model  
-2. Identify the last convolutional layer  
-3. Preprocess input images  
-4. Compute class-specific gradients using `GradientTape`  
-5. Generate Grad-CAM heatmaps  
-6. Overlay heatmaps on original images  
-7. Save results for analysis  
-
----
-
-### 4. Tools and Libraries Used
-- TensorFlow / Keras  
-- NumPy  
-- OpenCV  
-- Matplotlib  
+### 4. Output
+- Grad-CAM heatmap successfully generated
+- Output saved as `gradcam_result.jpg`
+- Console output includes:
+  - Predicted class index
+  - Confidence score
 
 ---
 
-### 5. Results
-- Grad-CAM heatmaps successfully generated  
-- Outputs saved for multiple defective test images  
-- Heatmaps highlight relevant structural and surface regions  
-- Model confidence values were consistently high  
+##  Day 5 – Grad-CAM Validation & Explainability Analysis
 
----
+### 1. Objective
+To validate the correctness, reliability, and interpretability of the Grad-CAM outputs generated from the defect detection model.
 
-### 6. Observations
-- The model focuses on visually meaningful regions  
-- Heatmaps align with expected defect-sensitive areas  
-- Absence of non-defective test images limits comparative analysis  
+### 2. Validation Focus Areas
+- Correct gradient flow from prediction layer to the target convolutional layer
+- Proper heatmap generation and normalization
+- Spatial alignment between heatmap and original image
+- Meaningful visual correspondence between highlighted regions and defect areas
 
----
+### 3. Validation Steps
+1. Verified that gradients are computed with respect to the last convolutional layer (`out_relu`)
+2. Confirmed non-zero gradients for the predicted class
+3. Applied ReLU to focus on positively contributing features
+4. Normalized heatmap values between 0 and 1
+5. Resized heatmap to match input image dimensions
+6. Visually inspected overlay alignment and focus regions
 
-### 7. Day 2 Conclusion
-The Grad-CAM explainability approach was successfully designed and implemented. The generated visualizations confirm that the model relies on relevant image features, thereby improving transparency and reliability in defect detection.
-
----
-
-## Overall Conclusion
-This two-day task achieved both theoretical understanding and practical implementation of Grad-CAM. The study and results demonstrate the effectiveness of Grad-CAM as a reliable explainability tool for CNN-based quality inspection systems.
+### 4. Example Console Output
+text
+Model Prediction Index: 0
+Confidence: ~0.77
 
 ---
 
@@ -136,10 +179,6 @@ The heatmaps clearly highlight solder joints and defect-prone areas,
 confirming that the model focuses on meaningful PCB regions rather than background noise.
 
 This improves trust and interpretability of the defect detection system.
-
-Grad-CAM visualizations demonstrate that the MobileNetV2-based model
-focuses on defect-prone regions such as solder joints and PCB tracks,
-confirming explainable and reliable defect classification.
 
 
 

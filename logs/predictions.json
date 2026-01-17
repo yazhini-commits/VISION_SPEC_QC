@@ -1,0 +1,10 @@
+[
+  {
+    "image": "good_00 (1).png",
+    "result": "DEFECTIVE",
+    "confidence": 0.946,
+    "severity": "HIGH",
+    "data_drift_warning": false,
+    "timestamp": "2026-01-17T12:51:08.101965"
+  }
+]
