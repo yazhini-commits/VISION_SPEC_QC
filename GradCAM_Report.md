@@ -137,6 +137,10 @@ confirming that the model focuses on meaningful PCB regions rather than backgrou
 
 This improves trust and interpretability of the defect detection system.
 
+Grad-CAM visualizations demonstrate that the MobileNetV2-based model
+focuses on defect-prone regions such as solder joints and PCB tracks,
+confirming explainable and reliable defect classification.
+
 
 
 
