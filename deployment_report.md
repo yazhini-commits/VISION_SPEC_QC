@@ -46,3 +46,8 @@ Performance metrics were defined. The target was to achieve an end-to-end FPS of
 A benchmarking strategy was planned to calculate FPS using timestamps between consecutive frames. This allowed real-time monitoring of system performance.
 
 ---
+
+### 17 January 2026 – Model Loading and Inference Testing
+The model loading strategy was finalized. Initial inference tests were conducted using sample inputs to validate correctness before real-time deployment.
+
+---
