@@ -1,21 +1,45 @@
 import cv2
 import numpy as np
 import time
+import os
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 from collections import deque
 
 # =========================================================
-# 12 JAN 2026 – OpenCV Installation & Setup
+# CONFIGURATION
+# =========================================================
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "saved_models/my_model.h5")
+
+# =========================================================
+#  OpenCV Installation & Setup
 # =========================================================
 CAMERA_INDEX = 0
 INPUT_WIDTH = 224
 INPUT_HEIGHT = 224
 
 # =========================================================
-# 15 JAN 2026 – FPS Targets & Metrics
+#  FPS Targets & Metrics
 # =========================================================
 TARGET_FPS = 30
 MIN_ACCEPTABLE_FPS = 20
 FPS_AVG_WINDOW = 30
+
+# =========================================================
+# MODEL LOADING 
+# =========================================================
+model = load_model(MODEL_PATH)
+
+def preprocess(frame):
+    frame = cv2.resize(frame, IMG_SIZE)
+    frame = frame.astype(np.float32) / 255.0
+    return np.expand_dims(frame, axis=0)
+
+def infer(frame):
+    pred = model(preprocess(frame), training=False).numpy()[0][0]
+    label = "Defect" if pred > 0.5 else "Pass"
+    return label, float(pred)
 
 # =========================================================
 # 16 JAN 2026 – FPS Benchmarking Class
@@ -42,7 +66,7 @@ class FPSBenchmark:
         return sum(self.fps_values) / len(self.fps_values)
 
 # =========================================================
-# 14 JAN 2026 – Inference Pipeline (Preprocess → Infer → Postprocess)
+# Inference Pipeline (Preprocess → Infer → Postprocess)
 # =========================================================
 def preprocess(frame):
     frame = cv2.resize(frame, (INPUT_WIDTH, INPUT_HEIGHT))
@@ -66,7 +90,7 @@ def postprocess(frame, label, confidence):
     return frame
 
 # =========================================================
-# 13 JAN 2026 – Real-Time Inference Workflow
+#  Real-Time Inference Workflow
 # =========================================================
 def run_realtime_pipeline():
     cap = cv2.VideoCapture(CAMERA_INDEX)
