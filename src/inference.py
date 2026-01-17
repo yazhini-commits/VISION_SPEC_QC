@@ -4,6 +4,8 @@ import torch.nn.functional as F
 from torchvision import models, transforms
 from PIL import Image
 import numpy as np
+import json
+from datetime import datetime
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
@@ -36,6 +38,30 @@ def severity_level(defect_prob):
         return "MEDIUM"
     else:
         return "HIGH"
+def log_prediction(image_path, output):
+    log_entry = {
+        "image": os.path.basename(image_path),
+        "result": output["result"],
+        "confidence": output["confidence"],
+        "severity": output["severity"],
+        "data_drift_warning": output["data_drift_warning"],
+        "timestamp": datetime.now().isoformat()
+    }
+
+    log_file = os.path.join(PROJECT_ROOT, "logs", "predictions.json")
+
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+    if os.path.exists(log_file):
+        with open(log_file, "r") as f:
+            data = json.load(f)
+    else:
+        data = []
+
+    data.append(log_entry)
+
+    with open(log_file, "w") as f:
+        json.dump(data, f, indent=2)
 
 def predict(image_path, confidence_threshold=0.65):
     """
@@ -83,7 +109,7 @@ def predict(image_path, confidence_threshold=0.65):
         "severity": severity,
         "data_drift_warning": drift_warning
     }
-
+    log_prediction(image_path, output)
     return output
 
 if __name__ == "__main__":
