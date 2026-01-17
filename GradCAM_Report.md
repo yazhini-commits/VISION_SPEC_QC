@@ -168,7 +168,31 @@ To validate the correctness, reliability, and interpretability of the Grad-CAM o
 Model Prediction Index: 0
 Confidence: ~0.77
 
+---
 
+## Day 6 – Grad-CAM Integration with Trained Model
+
+### Objective
+Integrate Grad-CAM with the trained CNN model (`my_model.h5`) to generate visual explanations for test images and validate model attention.
+
+### Focus Areas
+- Wrap model for Grad-CAM  
+- Preprocess images (224×224, normalize)  
+- Compute and overlay heatmaps  
+- Annotate predictions with actual vs predicted label and confidence  
+- Save outputs in `gradcam_outputs/`
+
+### Steps
+1. Load trained model and create Grad-CAM wrapper  
+2. Preprocess images and normalize  
+3. Compute Grad-CAM using `tf.GradientTape`  
+4. Resize heatmap and overlay on original image  
+5. Annotate with actual vs predicted class and confidence  
+6. Save annotated outputs  
+
+### Conclusion
+
+Grad-CAM provides visual explanations for model predictions, highlighting key regions and supporting interpretability and validation of the defect detection workflow.
 
 
 
