@@ -3,46 +3,63 @@ import numpy as np
 import time
 import os
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 from collections import deque
 
 # =========================================================
 # CONFIGURATION
 # =========================================================
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "saved_models/my_model.h5")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(PROJECT_ROOT, "saved_models", "my_model.h5")
 
 # =========================================================
-#  OpenCV Installation & Setup
+# OPENCV SETUP
 # =========================================================
 CAMERA_INDEX = 0
 INPUT_WIDTH = 224
 INPUT_HEIGHT = 224
 
 # =========================================================
-#  FPS Targets & Metrics
+# FPS TARGETS
 # =========================================================
 TARGET_FPS = 30
 MIN_ACCEPTABLE_FPS = 20
 FPS_AVG_WINDOW = 30
 
 # =========================================================
-# MODEL LOADING 
+# MODEL LOADING
 # =========================================================
-model = load_model(MODEL_PATH)
+print("Looking for model at:", MODEL_PATH)
 
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"Model not found:\n{MODEL_PATH}")
+
+print("Loading model...")
+model = tf.keras.models.load_model(MODEL_PATH)
+print("Model loaded successfully")
+
+# =========================================================
+# PREPROCESS
+# =========================================================
 def preprocess(frame):
-    frame = cv2.resize(frame, IMG_SIZE)
+    frame = cv2.resize(frame, (INPUT_WIDTH, INPUT_HEIGHT))
     frame = frame.astype(np.float32) / 255.0
     return np.expand_dims(frame, axis=0)
 
+# =========================================================
+# INFERENCE
+# =========================================================
 def infer(frame):
-    pred = model(preprocess(frame), training=False).numpy()[0][0]
-    label = "Defect" if pred > 0.5 else "Pass"
-    return label, float(pred)
+    input_tensor = preprocess(frame)
+
+    pred = model.predict(input_tensor, verbose=0)[0][0]
+
+    label = "DEFECT" if pred > 0.5 else "PASS"
+    confidence = float(pred if pred > 0.5 else 1.0 - pred)
+
+    return label, confidence
 
 # =========================================================
-# 16 JAN 2026 – FPS Benchmarking Class
+# FPS BENCHMARKING
 # =========================================================
 class FPSBenchmark:
     def __init__(self, window=30):
@@ -61,36 +78,27 @@ class FPSBenchmark:
         return fps
 
     def average(self):
-        if not self.fps_values:
-            return 0.0
-        return sum(self.fps_values) / len(self.fps_values)
+        return sum(self.fps_values) / len(self.fps_values) if self.fps_values else 0.0
 
 # =========================================================
-# Inference Pipeline (Preprocess → Infer → Postprocess)
+# POSTPROCESS
 # =========================================================
-def preprocess(frame):
-    frame = cv2.resize(frame, (INPUT_WIDTH, INPUT_HEIGHT))
-    frame = frame.astype(np.float32) / 255.0
-    return np.expand_dims(frame, axis=0)
-
-def dummy_inference(input_tensor):
-    time.sleep(0.01)  # simulate inference time
-    return "Object", 0.95
-
 def postprocess(frame, label, confidence):
+    color = (0, 255, 0) if label == "PASS" else (0, 0, 255)
+
     cv2.putText(
         frame,
         f"{label}: {confidence:.2f}",
         (20, 40),
         cv2.FONT_HERSHEY_SIMPLEX,
         1,
-        (0, 255, 0),
+        color,
         2
     )
     return frame
 
 # =========================================================
-#  Real-Time Inference Workflow
+# REAL-TIME PIPELINE
 # =========================================================
 def run_realtime_pipeline():
     cap = cv2.VideoCapture(CAMERA_INDEX)
@@ -106,26 +114,25 @@ def run_realtime_pipeline():
         if not ret:
             break
 
-        # Step 1: Preprocess
-        input_tensor = preprocess(frame)
+        # Inference
+        label, confidence = infer(frame)
 
-        # Step 2: Inference
-        label, confidence = dummy_inference(input_tensor)
-
-        # Step 3: Postprocess
+        # Draw results
         frame = postprocess(frame, label, confidence)
 
-        # Step 4: FPS Benchmarking
+        # FPS
         fps_meter.update()
         avg_fps = fps_meter.average()
 
-        # FPS Status (15 Jan Metrics)
         if avg_fps >= TARGET_FPS:
             status = "PASS"
+            status_color = (0, 255, 0)
         elif avg_fps >= MIN_ACCEPTABLE_FPS:
             status = "WARN"
+            status_color = (0, 255, 255)
         else:
             status = "FAIL"
+            status_color = (0, 0, 255)
 
         cv2.putText(
             frame,
@@ -133,21 +140,21 @@ def run_realtime_pipeline():
             (20, 80),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
-            (255, 0, 0),
+            status_color,
             2
         )
 
-        cv2.imshow("Vision QC – 12 to 16 Jan", frame)
+        cv2.imshow("Vision QC  Production Pipeline", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
-    print("Pipeline execution completed")
+    print("execution completed")
 
 # =========================================================
-# MAIN ENTRY POINT
+# MAIN
 # =========================================================
 if __name__ == "__main__":
     run_realtime_pipeline()
