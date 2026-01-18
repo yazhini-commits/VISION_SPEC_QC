@@ -34,3 +34,13 @@ focusing on binary classification between non-defective (good) and defective sam
 ## Intended Use
 - Academic research
 - Industrial proof-of-concept for automated quality inspection
+
+### Model Information
+- Model Type: CNN (MobileNetV2)
+- Task: Defective vs Non-Defective Classification
+- Output: Sigmoid (Binary)
+
+### Usage
+- Primary: Defect classification
+- Secondary: Explainability analysis (Grad-CAM support)
+

@@ -51,3 +51,17 @@ Designed for production environments with real-time inference capability
 Zaalima Development Internship  
 Production AI Project – Computer Vision (Project 3)
 
+
+## Model Training Summary (Member-2)
+
+- CNN Architecture: MobileNetV2
+- Transfer Learning with ImageNet weights
+- Base layers frozen during initial training
+- Optimizer: Adam (learning rate = 0.0001)
+- Loss Function: Binary Crossentropy
+- Input Size: 224x224x3
+- Final model saved at: saved_models/my_model.h5
+
+This trained model is provided for downstream explainability (Grad-CAM) integration.
+
+
