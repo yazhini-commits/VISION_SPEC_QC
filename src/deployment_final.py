@@ -1,19 +1,3 @@
-# =========================================================
-# DEPLOYMENT & PERFORMANCE ENGINEER CONTRIBUTION
-# DATE RANGE: 12 January 2026 – 22 January 2026
-#
-# 12 Jan – OpenCV installation and setup
-# 13 Jan – Design real-time inference workflow
-# 14 Jan – Plan inference pipeline
-# 15 Jan – Define FPS targets and metrics
-# 16 Jan – Set up FPS benchmarking
-# 17 Jan – Model loading and inference testing
-# 18 Jan – Implement frame-by-frame inference
-# 19 Jan – Optimize inference speed
-# 20 Jan – FPS validation
-# 21 Jan – Prepare live demo
-# 22 Jan – Integrate OpenCV with final model
-# =========================================================
 
 import cv2
 import numpy as np
