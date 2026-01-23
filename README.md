@@ -79,3 +79,10 @@ This trained model is provided for downstream explainability (Grad-CAM) integrat
 - Input shape: 224×224×3
 - Output: Binary (Pass / Defect)
 - Status: Ready for Grad-CAM explainability and deployment testing
+
+
+## Model Explanation (Jan 23)
+
+- Transfer learning enabled faster convergence and better generalization
+- Data augmentation improved robustness to real-world variations
+- Final optimized model saved and verified for downstream use
