@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import time
+import pandas as pd
 import tensorflow as tf
 from threading import Thread, Lock
 from collections import deque
@@ -20,7 +21,8 @@ FPS_WINDOW = 30
 MAX_FRAMES = 300
 
 # HD OUTPUT SETTINGS
-DISPLAY_SIZE = (1920, 1080)
+DISPLAY_SIZE = (1920, 1080)   # (width, height)
+JPEG_QUALITY = 95
 
 # =========================================================
 # DATASET MODE CONFIG
@@ -31,6 +33,15 @@ DATASET_DIR = os.path.join(BASE_DIR, "processed_data", "test")
 # PREDICTION TUNING
 # =========================================================
 GOOD_THRESHOLD = 0.7
+
+# =========================================================
+# OUTPUT FOLDERS
+# =========================================================
+FRAME_DIR = os.path.join(BASE_DIR, "outputs", "live_demo_frames")
+REPORT_DIR = os.path.join(BASE_DIR, "outputs", "reports")
+
+os.makedirs(FRAME_DIR, exist_ok=True)
+os.makedirs(REPORT_DIR, exist_ok=True)
 
 # =========================================================
 # MODEL LOADING
@@ -112,12 +123,20 @@ def draw_hud(frame, lines, x=30, y=30, width=700, line_height=55):
     overlay = frame.copy()
     height = line_height * len(lines) + 60
 
+    # Dark background
     cv2.rectangle(overlay, (x, y), (x + width, y + height), (10, 10, 10), -1)
+
+    # Border
     cv2.rectangle(overlay, (x, y), (x + width, y + height), (0, 255, 255), 3)
+
+    # Blend
     cv2.addWeighted(overlay, 0.9, frame, 0.1, 0, frame)
 
     font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1.6
+    font_thickness = 3
 
+    # Title
     cv2.putText(
         frame,
         "VISION QC LIVE DASHBOARD",
@@ -129,15 +148,16 @@ def draw_hud(frame, lines, x=30, y=30, width=700, line_height=55):
         cv2.LINE_8
     )
 
+    # Content
     for i, line in enumerate(lines):
         cv2.putText(
             frame,
             line,
             (x + 15, y + 90 + i * line_height),
             font,
-            1.6,
+            font_scale,
             (255, 255, 255),
-            3,
+            font_thickness,
             cv2.LINE_8
         )
 
@@ -206,7 +226,11 @@ def run_live_demo():
     time.sleep(1.0)
 
     fps_meter = FPSMeter(FPS_WINDOW)
+    performance_log = []
     frame_id = 0
+
+    # Confusion Matrix Counters
+    TP = FP = FN = TN = 0
 
     print("VisionSpec QC – Live Deployment")
     print("Mode: 2-Class Dataset Validation")
@@ -217,32 +241,91 @@ def run_live_demo():
         if frame is None:
             continue
 
+        # Resize FIRST for sharp HUD & saved frames
         frame = cv2.resize(frame, DISPLAY_SIZE, interpolation=cv2.INTER_CUBIC)
+
         filename, gt = stream.get_meta()
 
+        # Inference
         label, confidence = infer(frame)
 
+        # Confusion Matrix Logic
+        if gt == "GOOD" and label == "PASS":
+            TP += 1
+        elif gt == "GOOD" and label == "DEFECT":
+            FN += 1
+        elif gt == "DEFECTIVE" and label == "PASS":
+            FP += 1
+        elif gt == "DEFECTIVE" and label == "DEFECT":
+            TN += 1
+
+        total = TP + FP + FN + TN
+        accuracy = (TP + TN) / total if total else 0
+        precision = TP / (TP + FP) if (TP + FP) else 0
+        recall = TP / (TP + FN) if (TP + FN) else 0
+
+        # FPS
         fps_meter.update()
         avg_fps = fps_meter.avg()
         status = fps_status(avg_fps)
 
+        # HUD DISPLAY
         hud_lines = [
             f"Image: {filename}",
             f"GT: {gt}  Pred: {label} ({confidence:.2f})",
+            f"Accuracy: {accuracy*100:.2f}%",
             f"FPS: {avg_fps:.2f} ({status})"
         ]
 
         draw_hud(frame, hud_lines)
 
-        cv2.imshow("VisionSpec QC – Live Demo (HD)", frame)
+        # Save frames (HD + High Quality)
+        if frame_id % 10 == 0:
+            cv2.imwrite(
+                os.path.join(FRAME_DIR, f"frame_{frame_id}.jpg"),
+                frame,
+                [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY]
+            )
+
+        # Log report
+        performance_log.append({
+            "Frame": frame_id,
+            "Image": filename,
+            "GroundTruth": gt,
+            "Prediction": label,
+            "Confidence": round(confidence, 4),
+            "TP": TP,
+            "FP": FP,
+            "FN": FN,
+            "TN": TN,
+            "Accuracy": round(accuracy, 4),
+            "Precision": round(precision, 4),
+            "Recall": round(recall, 4),
+            "FPS": round(avg_fps, 2),
+            "Status": status
+        })
+
+        cv2.imshow("VisionSpec QC – Final Demo (HD)", frame)
         frame_id += 1
 
         if cv2.waitKey(1) & 0xFF == ord('q') or frame_id >= MAX_FRAMES:
             break
 
+    # =========================================================
+    # REPORT GENERATION
+    # =========================================================
     stream.stop()
     cv2.destroyAllWindows()
+
+    df = pd.DataFrame(performance_log)
+    report_path = os.path.join(REPORT_DIR, "performance_report.csv")
+    df.to_csv(report_path, index=False)
+
     print("Deployment completed")
+    print(f"Final Accuracy: {accuracy*100:.2f}%")
+    print(f"Precision: {precision:.2f}")
+    print(f"Recall: {recall:.2f}")
+    print(f"Report saved at:\n{report_path}")
 
 # =========================================================
 # MAIN
