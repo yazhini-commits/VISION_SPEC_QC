@@ -76,3 +76,9 @@ The system was stabilized for demonstration. Error handling and visual FPS overl
 The final trained model was integrated with the OpenCV-based inference pipeline. End-to-end testing confirmed successful integration.
 
 ---
+
+### 23 January 2026 – Real-Time Testing and Performance Logging
+
+The system was deployed in a real-time testing environment using a dataset stream to simulate a live camera feed. Frame-by-frame inference was performed while monitoring FPS, accuracy, precision, and recall. A live dashboard (HUD) displayed performance metrics, predictions, and system status in HD resolution. Automated logging was enabled to store system performance data in CSV format for post-analysis.
+
+---
