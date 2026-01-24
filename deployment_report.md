@@ -82,3 +82,9 @@ The final trained model was integrated with the OpenCV-based inference pipeline.
 The system was deployed in a real-time testing environment using a dataset stream to simulate a live camera feed. Frame-by-frame inference was performed while monitoring FPS, accuracy, precision, and recall. A live dashboard (HUD) displayed performance metrics, predictions, and system status in HD resolution. Automated logging was enabled to store system performance data in CSV format for post-analysis.
 
 ---
+### 24 January 2026 – Performance Evaluation and Metrics Analysis
+
+The collected performance logs were analyzed to evaluate system reliability and classification quality. The confusion matrix (TP, FP, FN, TN) was used to assess prediction accuracy. Precision and recall values were reviewed to measure the system’s effectiveness in identifying defective and non-defective samples. FPS stability was evaluated to ensure real-time constraints were consistently met.
+
+---
+
