@@ -21,7 +21,7 @@ FPS_WINDOW = 30
 MAX_FRAMES = 300
 
 # HD OUTPUT SETTINGS
-DISPLAY_SIZE = (1920, 1080)   # (width, height)
+DISPLAY_SIZE = (1920, 1080)
 JPEG_QUALITY = 95
 
 # =========================================================
@@ -123,20 +123,12 @@ def draw_hud(frame, lines, x=30, y=30, width=700, line_height=55):
     overlay = frame.copy()
     height = line_height * len(lines) + 60
 
-    # Dark background
     cv2.rectangle(overlay, (x, y), (x + width, y + height), (10, 10, 10), -1)
-
-    # Border
     cv2.rectangle(overlay, (x, y), (x + width, y + height), (0, 255, 255), 3)
-
-    # Blend
     cv2.addWeighted(overlay, 0.9, frame, 0.1, 0, frame)
 
     font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 1.6
-    font_thickness = 3
 
-    # Title
     cv2.putText(
         frame,
         "VISION QC LIVE DASHBOARD",
@@ -148,16 +140,15 @@ def draw_hud(frame, lines, x=30, y=30, width=700, line_height=55):
         cv2.LINE_8
     )
 
-    # Content
     for i, line in enumerate(lines):
         cv2.putText(
             frame,
             line,
             (x + 15, y + 90 + i * line_height),
             font,
-            font_scale,
+            1.5,
             (255, 255, 255),
-            font_thickness,
+            3,
             cv2.LINE_8
         )
 
@@ -219,6 +210,80 @@ class DatasetStream:
         time.sleep(0.2)
 
 # =========================================================
+#  PERFORMANCE REPORT
+# =========================================================
+def generate_performance_report(log_data, report_dir):
+    df = pd.DataFrame(log_data)
+    timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+
+    csv_path = os.path.join(report_dir, f"performance_report.csv")
+    txt_path = os.path.join(report_dir, f"performance_summary.txt")
+
+    df.to_csv(csv_path, index=False)
+
+    final_row = df.iloc[-1]
+    avg_fps = df["FPS"].mean()
+    pass_rate = (df["Prediction"] == "PASS").mean() * 100
+
+    summary = f"""
+VISION QC – PERFORMANCE REPORT
+
+Total Frames: {len(df)}
+
+Final Accuracy: {final_row['Accuracy'] * 100:.2f}%
+Final Precision: {final_row['Precision']:.2f}
+Final Recall: {final_row['Recall']:.2f}
+Average FPS: {avg_fps:.2f}
+PASS Rate: {pass_rate:.2f}%
+
+Status: {"PASS" if avg_fps >= TARGET_FPS else "WARN/FAIL"}
+"""
+
+    with open(txt_path, "w") as f:
+        f.write(summary)
+
+    print("\nREPORT GENERATED")
+    print("CSV:", csv_path)
+    print("SUMMARY:", txt_path)
+
+# =========================================================
+# CONTRIBUTION SUMMARY
+# =========================================================
+def generate_contribution_summary(report_dir):
+    timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+    txt_path = os.path.join(report_dir, f"contribution_summary_{timestamp}.txt")
+
+    summary = f"""
+VISION QC – CONTRIBUTION SUMMARY
+Member: Deployment & Performance Engineer
+
+Key Contributions:
+- Installed and configured OpenCV and TensorFlow environment
+- Designed real-time inference workflow
+- Planned and optimized inference pipeline
+- Defined FPS targets and benchmarking metrics
+- Implemented frame-by-frame inference system
+- Integrated trained model with OpenCV live stream
+- Validated performance using FPS thresholds
+- Generated automated performance reports
+- Prepared final demo deployment system
+
+Deliverables:
+- HD Live Dashboard
+- FPS Monitoring System
+- Confusion Matrix Tracking
+- Performance Reports (CSV + TXT)
+
+Status: COMPLETE
+"""
+
+    with open(txt_path, "w") as f:
+        f.write(summary)
+
+    print("\nCONTRIBUTION SUMMARY GENERATED")
+    print("SUMMARY:", txt_path)
+
+# =========================================================
 # LIVE DEPLOYMENT LOOP
 # =========================================================
 def run_live_demo():
@@ -229,7 +294,6 @@ def run_live_demo():
     performance_log = []
     frame_id = 0
 
-    # Confusion Matrix Counters
     TP = FP = FN = TN = 0
 
     print("VisionSpec QC – Live Deployment")
@@ -241,15 +305,11 @@ def run_live_demo():
         if frame is None:
             continue
 
-        # Resize FIRST for sharp HUD & saved frames
         frame = cv2.resize(frame, DISPLAY_SIZE, interpolation=cv2.INTER_CUBIC)
-
         filename, gt = stream.get_meta()
 
-        # Inference
         label, confidence = infer(frame)
 
-        # Confusion Matrix Logic
         if gt == "GOOD" and label == "PASS":
             TP += 1
         elif gt == "GOOD" and label == "DEFECT":
@@ -264,12 +324,10 @@ def run_live_demo():
         precision = TP / (TP + FP) if (TP + FP) else 0
         recall = TP / (TP + FN) if (TP + FN) else 0
 
-        # FPS
         fps_meter.update()
         avg_fps = fps_meter.avg()
         status = fps_status(avg_fps)
 
-        # HUD DISPLAY
         hud_lines = [
             f"Image: {filename}",
             f"GT: {gt}  Pred: {label} ({confidence:.2f})",
@@ -279,7 +337,6 @@ def run_live_demo():
 
         draw_hud(frame, hud_lines)
 
-        # Save frames (HD + High Quality)
         if frame_id % 10 == 0:
             cv2.imwrite(
                 os.path.join(FRAME_DIR, f"frame_{frame_id}.jpg"),
@@ -287,7 +344,6 @@ def run_live_demo():
                 [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY]
             )
 
-        # Log report
         performance_log.append({
             "Frame": frame_id,
             "Image": filename,
@@ -312,20 +368,17 @@ def run_live_demo():
             break
 
     # =========================================================
-    # REPORT GENERATION
+    # FINAL DELIVERABLES
     # =========================================================
     stream.stop()
     cv2.destroyAllWindows()
 
-    df = pd.DataFrame(performance_log)
-    report_path = os.path.join(REPORT_DIR, "performance_report.csv")
-    df.to_csv(report_path, index=False)
+    print("\nGenerating final deliverables...")
+    generate_performance_report(performance_log, REPORT_DIR)
+    generate_contribution_summary(REPORT_DIR)
 
-    print("Deployment completed")
-    print(f"Final Accuracy: {accuracy*100:.2f}%")
-    print(f"Precision: {precision:.2f}")
-    print(f"Recall: {recall:.2f}")
-    print(f"Report saved at:\n{report_path}")
+    print("\nDeployment completed successfully")
+    print("Performance report and contribution summary are ready")
 
 # =========================================================
 # MAIN
