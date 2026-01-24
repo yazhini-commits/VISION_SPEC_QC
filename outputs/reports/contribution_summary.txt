@@ -1,0 +1,22 @@
+
+VISION QC – CONTRIBUTION SUMMARY
+Member: Deployment & Performance Engineer
+
+Key Contributions:
+- Installed and configured OpenCV and TensorFlow environment
+- Designed real-time inference workflow
+- Planned and optimized inference pipeline
+- Defined FPS targets and benchmarking metrics
+- Implemented frame-by-frame inference system
+- Integrated trained model with OpenCV live stream
+- Validated performance using FPS thresholds
+- Generated automated performance reports
+- Prepared final demo deployment system
+
+Deliverables:
+- HD Live Dashboard
+- FPS Monitoring System
+- Confusion Matrix Tracking
+- Performance Reports (CSV + TXT)
+
+Status: COMPLETE
