@@ -65,7 +65,7 @@ Production AI Project – Computer Vision (Project 3)
 This trained model is provided for downstream explainability (Grad-CAM) integration.
 
 
-## Model Handover (Jan 21)
+## Model Handover 
 
 - Final trained model: saved_models/my_model.h5
 - Input shape: 224×224×3
@@ -73,7 +73,7 @@ This trained model is provided for downstream explainability (Grad-CAM) integrat
 - Owner: Member-2 (Model Development)
 
 
-## Model Readiness (Jan 22)
+## Model Readiness
 
 - Final trained model verified and load-tested
 - Input shape: 224×224×3
@@ -81,7 +81,7 @@ This trained model is provided for downstream explainability (Grad-CAM) integrat
 - Status: Ready for Grad-CAM explainability and deployment testing
 
 
-## Model Explanation (Jan 23)
+## Model Explanation 
 
 - Transfer learning enabled faster convergence and better generalization
 - Data augmentation improved robustness to real-world variations
