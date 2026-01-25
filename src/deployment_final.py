@@ -251,10 +251,10 @@ Status: {"PASS" if avg_fps >= TARGET_FPS else "WARN/FAIL"}
 # =========================================================
 def generate_contribution_summary(report_dir):
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    txt_path = os.path.join(report_dir, f"contribution_summary_{timestamp}.txt")
+    txt_path = os.path.join(report_dir, f"contribution_summary.txt")
 
     summary = f"""
-VISION QC – CONTRIBUTION SUMMARY
+VISION QC - CONTRIBUTION SUMMARY
 Member: Deployment & Performance Engineer
 
 Key Contributions:
