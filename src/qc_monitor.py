@@ -15,11 +15,11 @@ def monitor_batch(folder):
         elif "UNCERTAIN" in result:
             uncertain += 1
 
-    print("\n📊 BATCH QUALITY REPORT")
+    print("\n BATCH QUALITY REPORT")
     print(f"Total items: {total}")
     print(f"Defective: {defective}")
     print(f"Uncertain: {uncertain}")
     print(f"Defect Rate: {defective/total:.2%}")
 
     if defective / total > 0.2:
-        print("🚨 QUALITY ALERT: High defect rate detected")
+        print(" QUALITY ALERT: High defect rate detected")
