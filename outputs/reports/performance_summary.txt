@@ -1,12 +1,12 @@
 
 VISION QC – PERFORMANCE REPORT
 
-Total Frames: 57
+Total Frames: 300
 
-Final Accuracy: 89.47%
-Final Precision: 0.89
-Final Recall: 1.00
-Average FPS: 20.33
-PASS Rate: 94.74%
+Final Accuracy: 85.67%
+Final Precision: 0.84
+Final Recall: 0.99
+Average FPS: 20.34
+PASS Rate: 87.67%
 
 Status: WARN/FAIL
