@@ -1,8 +1,22 @@
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import json
+import os
+# ==============================
+# Training Configuration
+# ==============================
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+EPOCHS = 5
+
+# Model: MobileNetV2 (Transfer Learning)
+# Task : Binary Classification (Pass / Defect)
+# ==============================
+
 
 
 # Load base model
@@ -49,23 +63,38 @@ val_datagen = ImageDataGenerator(rescale=1./255)
 
 train_generator = train_datagen.flow_from_directory(
     "processed_data/train",
-    target_size=(224, 224),
-    batch_size=32,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
     class_mode="binary"
 )
 
 val_generator = val_datagen.flow_from_directory(
     "processed_data/val",
-    target_size=(224, 224),
-    batch_size=32,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
     class_mode="binary"
 )
+callbacks = [
+    EarlyStopping(
+        monitor="val_loss",
+        patience=3,
+        restore_best_weights=True
+    ),
+    ModelCheckpoint(
+        "saved_models/my_model.h5",
+        monitor="val_loss",
+        save_best_only=True
+    )
+]
+
 
 history = model.fit(
     train_generator,
     validation_data=val_generator,
-    epochs=5
+    epochs=EPOCHS,
+    callbacks=callbacks
 )
+
 
 import os
 
@@ -76,3 +105,8 @@ os.makedirs("saved_models", exist_ok=True)
 model.save("saved_models/my_model.h5")
 
 print("Model saved successfully at saved_models/my_model.h5")
+history_path = "saved_models/training_history.json"
+with open(history_path, "w") as f:
+    json.dump(history.history, f)
+
+print(f"Training history saved at {history_path}")
