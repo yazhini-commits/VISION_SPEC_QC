@@ -1,3 +1,7 @@
+# =========================================================
+# DEPLOYMENT & PERFORMANCE ENGINEER
+# =========================================================
+
 import cv2
 import numpy as np
 import os
@@ -139,7 +143,6 @@ def draw_hud(frame, lines, x=30, y=30, width=700, line_height=55):
         3,
         cv2.LINE_8
     )
-
     for i, line in enumerate(lines):
         cv2.putText(
             frame,
